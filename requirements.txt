@@ -21,7 +21,7 @@ grpcio==1.22.0
 hyperlink==19.0.0
 idna==2.8
 incremental==17.5.0
-
+git+git://github.com/hernan4444/inplace_abn#egg=inplace_abn
 ipykernel==5.1.0
 ipython==7.2.0
 ipython-genutils==0.2.0
@@ -64,7 +64,6 @@ scipy==1.2.0
 six==1.12.0
 sklearn==0.0
 tb-nightly==1.15.0a20190731
-
 toolz==0.9.0
 torchvision==0.2.1
 torchviz==0.0.1
