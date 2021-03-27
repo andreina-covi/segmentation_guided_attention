@@ -187,6 +187,63 @@ class ABN(nn.Module):
         return rep.format(**self.__dict__)
 
 
+class InPlaceABN(ABN):
+    """InPlace Activated Batch Normalization
+    Args:
+        num_features: Number of feature channels in the input and output
+        eps: Small constant to prevent numerical issues
+        momentum: Momentum factor applied to compute running statistics with
+            exponential moving average, or `None` to compute running statistics
+            with cumulative moving average
+        affine: If `True` apply learned scale and shift transformation after normalization
+        track_running_stats: a boolean value that when set to `True`, this
+            module tracks the running mean and variance, and when set to `False`,
+            this module does not track such statistics and uses batch statistics instead
+            in both training and eval modes if the running mean and variance are `None`
+        activation: Name of the activation functions, one of: `relu`, `leaky_relu`,
+            `elu` or `identity`
+        activation_param: Negative slope for the `leaky_relu` activation or `alpha`
+            parameter for the `elu` activation
+    """
+
+    def __init__(
+        self,
+        num_features: int,
+        eps: float = 1e-5,
+        momentum: Optional[float] = 0.1,
+        affine: bool = True,
+        track_running_stats: bool = True,
+        activation: str = "leaky_relu",
+        activation_param: float = 0.01,
+    ):
+        super(InPlaceABN, self).__init__(
+            num_features,
+            eps,
+            momentum,
+            affine,
+            track_running_stats,
+            activation,
+            activation_param,
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        momentum, training = self._get_momentum_and_training()
+        running_mean, running_var = self._get_running_stats()
+
+        return inplace_abn(
+            x,
+            self.weight,
+            self.bias,
+            running_mean,
+            running_var,
+            training,
+            momentum,
+            self.eps,
+            self.activation,
+            self.activation_param,
+        )
+
+
 class InPlaceABNSync(ABN):
     """InPlace Activated Batch Normalization with distributed synchronization
     This operates like `inplace_abn`, but assumes to be called by all replicas
