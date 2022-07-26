@@ -80,7 +80,7 @@ class SegAttention(nn.Module):
                     dropout=0.1,
                     kdim=NUM_CLASSES,
                     vdim=self.cnn_size[1],
-                    qdim=self.cnn_size[1],
+                    # qdim=self.cnn_size[1],
                 )
                 for _ in range(self.n_layers)
             ]
